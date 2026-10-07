@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Autoevaluación de los 4 focos del rol de Jefatura de Proyecto, con evaluación de par. MAS Consultores.">
+<title>Mapa de Fortalezas MAS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: columna única de 880px; cuestionario por foco (4 pasos) → reporte tipo "mapa" en grilla 2×2 → comparación con pistas 1–5 */
+:root{
+  --mas-amarillo:#E8A500; --mas-negro:#000000;
+  --mas-morado:#75238B; --mas-azul:#0C1C91; --mas-verde:#208927; --mas-rojo:#C50004;
+  --mas-gris-1:#B0B0B0; --mas-gris-2:#767479; --mas-gris-3:#49494C;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+
+  --bg:#F4F4F4; --surface:#FFFFFF; --fg:#000000; --muted:#49494C; --soft:#767479;
+  --line:rgba(0,0,0,.12); --track:rgba(0,0,0,.08);
+  --ink:#000000; --on-ink:#FFFFFF; --accent:#E8A500; --on-accent:#000000;
+  --f1:#0C1C91; --f2:#75238B; --f3:#208927; --f4:#C50004;
+  --l1:#B0B0B0; --l1t:#000000; --l2:#767479; --l2t:#FFFFFF; --l3:#49494C; --l3t:#FFFFFF;
+  --l4:#000000; --l4t:#FFFFFF; --l5:#E8A500; --l5t:#000000;
+  --focus:#0C1C91;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B0B0C; --surface:#18181A; --fg:#FFFFFF; --muted:#C9C9CC; --soft:#B0B0B0;
+  --line:rgba(255,255,255,.14); --track:rgba(255,255,255,.10);
+  --ink:#FFFFFF; --on-ink:#000000;
+  --f1:#1E38BA;
+  --l4:#FFFFFF; --l4t:#000000; --focus:#E8A500; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0B0B0C; --surface:#18181A; --fg:#FFFFFF; --muted:#C9C9CC; --soft:#B0B0B0;
+  --line:rgba(255,255,255,.14); --track:rgba(255,255,255,.10);
+  --ink:#FFFFFF; --on-ink:#000000;
+  --f1:#1E38BA;
+  --l4:#FFFFFF; --l4t:#000000; --focus:#E8A500; color-scheme:dark }
+
+html{color-scheme:light}
+*{box-sizing:border-box}
+img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:20px 64px}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.04em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.06em}
+h2{font-size:22px}
+h3{font-size:17px;letter-spacing:-.02em}
+p{margin:0}
+.muted{color:var(--muted)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Barra superior */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px;flex-wrap:wrap}
+.logo-pill{background:#FFFFFF;border-radius:999px;padding:8px 18px;display:inline-flex;align-items:center}
+.logo-pill svg{height:26px;width:auto;display:block}
+.tabs{display:flex;gap:6px;background:var(--surface);border-radius:999px;padding:4px;border:1px solid var(--line)}
+.tabs button{border:0;background:transparent;border-radius:999px;padding:7px 14px;font-weight:600;font-size:13px;cursor:pointer;color:var(--muted)}
+.tabs button[aria-current="true"]{background:var(--ink);color:var(--on-ink)}
+
+/* Botones */
+.btn{border:0;border-radius:999px;padding:12px 22px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--on-ink)}
+.btn.amarillo{background:var(--accent);color:var(--on-accent)}
+.btn.borde{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--fg)}
+.btn.texto{background:transparent;color:var(--fg);padding-inline:6px;text-decoration:underline;text-underline-offset:3px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.acciones{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.card{background:var(--surface);border-radius:20px;padding:24px;border:1px solid var(--line)}
+.stack{display:flex;flex-direction:column;gap:16px}
+.stack-lg{display:flex;flex-direction:column;gap:28px}
+
+/* Portada */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center}
+.hero p.lead{font-size:17px;max-width:46ch;margin-top:14px;color:var(--muted)}
+.eslabones{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end;height:200px}
+.eslabones span{border-radius:999px;display:block}
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo label{font-size:13px;font-weight:600}
+.campo input,.campo select,.campo textarea{background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:11px 14px;width:100%}
+.campo textarea{min-height:76px;resize:vertical;border-radius:16px}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.focos-lista{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.foco-chip{display:flex;gap:10px;align-items:center;font-size:13px;font-weight:600;line-height:1.25}
+.foco-chip i{width:12px;height:28px;border-radius:999px;flex:none}
+
+/* Escala */
+.escala-ref{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.escala-ref div{display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.35;color:var(--muted)}
+.nivel{display:inline-flex;align-items:center;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:600;white-space:nowrap;width:max-content;max-width:100%}
+.n1{background:var(--l1);color:var(--l1t)} .n2{background:var(--l2);color:var(--l2t)} .n3{background:var(--l3);color:var(--l3t)}
+.n4{background:var(--l4);color:var(--l4t)} .n5{background:var(--l5);color:var(--l5t)}
+
+/* Cuestionario */
+.progreso{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.progreso span{height:8px;border-radius:999px;background:var(--track)}
+.foco-head{display:flex;gap:14px;align-items:flex-start}
+.foco-num{width:44px;height:44px;border-radius:999px;display:grid;place-items:center;color:#FFFFFF;font-weight:800;font-size:18px;flex:none}
+.item{padding-block:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.item:first-of-type{border-top:0}
+.item .desc{color:var(--muted);font-size:14px;max-width:62ch}
+.opciones{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.opciones input{position:absolute;opacity:0;pointer-events:none}
+.opciones label{border:1.5px solid var(--line);border-radius:999px;padding:9px 6px;text-align:center;font-size:12.5px;font-weight:600;cursor:pointer;line-height:1.2;display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;color:var(--muted)}
+.opciones label b{font-weight:800;color:var(--fg)}
+.opciones input:checked + label{border-color:transparent}
+.opciones input:focus-visible + label{outline:3px solid var(--focus);outline-offset:2px}
+.interes{display:flex;gap:6px;flex-wrap:wrap}
+.interes input{position:absolute;opacity:0;pointer-events:none}
+.interes label{border:1.5px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.interes input:checked + label{background:var(--ink);color:var(--on-ink);border-color:transparent}
+.interes input:focus-visible + label{outline:3px solid var(--focus);outline-offset:2px}
+.aviso{font-size:13px;color:var(--mas-rojo);font-weight:600}
+:root[data-theme="dark"] .aviso{color:var(--accent)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .aviso{color:var(--accent)} }
+
+/* Reporte */
+.leyenda{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.leyenda span{display:inline-flex;align-items:center;gap:7px}
+.dot{width:12px;height:12px;border-radius:999px;display:inline-block;flex:none}
+.mapa{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.foco-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.foco-card header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.foco-card header h3{display:flex;gap:10px;align-items:center}
+.foco-card header h3 i{width:10px;height:26px;border-radius:999px;flex:none}
+.badge{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border-radius:999px;padding:5px 11px;white-space:nowrap}
+.b-fort{background:var(--ink);color:var(--on-ink)}
+.b-dev{background:var(--track);color:var(--fg)}
+.b-des{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--fg)}
+.fila-item{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px}
+.fila-item span:first-child{min-width:0}
+.promedio{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.pista{flex:1;height:10px;border-radius:999px;background:var(--track);position:relative;overflow:hidden}
+.pista b{position:absolute;inset:0 auto 0 0;border-radius:999px}
+.num{font-variant-numeric:tabular-nums;font-weight:700;color:var(--fg)}
+.foco-dev{background:var(--bg);border-radius:14px;padding:12px 14px;font-size:13.5px;display:flex;flex-direction:column;gap:4px;margin-top:auto}
+.sintesis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sintesis .card{display:flex;flex-direction:column;gap:8px;padding:20px}
+.sintesis .card.destacada{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.sintesis .card.destacada .eyebrow{color:var(--on-accent);opacity:.75}
+.sintesis strong{font-size:16px;letter-spacing:-.02em;line-height:1.3}
+.cierre{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px 24px}
+.cierre > div{display:flex;flex-direction:column;gap:4px;max-width:52ch}
+.ejemplo-banda{background:var(--accent);color:var(--on-accent);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:600;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.ejemplo-banda button{background:transparent;border:0;font-weight:700;text-decoration:underline;cursor:pointer;color:inherit;padding:0}
+
+/* Comparación */
+.escala-eje{display:grid;grid-template-columns:repeat(5,1fr);font-size:11px;color:var(--soft);font-weight:600}
+.escala-eje span:nth-child(1){text-align:left} .escala-eje span:nth-child(5){text-align:right}
+.escala-eje span:nth-child(2),.escala-eje span:nth-child(3),.escala-eje span:nth-child(4){text-align:center}
+.comp-fila{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr) 118px;gap:16px;align-items:center;padding-block:10px;border-top:1px solid var(--line)}
+.comp-fila:first-child{border-top:0}
+.comp-fila .nombre{font-size:14px;font-weight:500;min-width:0}
+.comp-fila .nombre small{display:block;color:var(--soft);font-size:12px;font-variant-numeric:tabular-nums}
+.db{position:relative;height:22px}
+.db::before{content:"";position:absolute;left:0;right:0;top:50%;height:4px;margin-top:-2px;border-radius:999px;background:var(--track)}
+.db .tick{position:absolute;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:999px;background:var(--mas-gris-1)}
+.db .conn{position:absolute;top:50%;height:10px;margin-top:-5px;border-radius:999px}
+.db .yo,.db .par{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:999px}
+.db .yo{background:var(--fg)}
+.db .par{background:var(--accent);box-shadow:0 0 0 3px var(--surface)}
+.db .par.igual{width:10px;height:10px;margin:-5px 0 0 -5px;box-shadow:none}
+.brecha{font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;text-align:center;white-space:nowrap}
+.g-igual{background:var(--track);color:var(--fg)}
+.g-oculta{background:var(--accent);color:var(--on-accent)}
+.g-ciego{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--fg)}
+.cuadrantes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cuadrantes .card{padding:20px;display:flex;flex-direction:column;gap:10px}
+.cuadrantes ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.cuadrantes li{display:flex;gap:8px;align-items:baseline}
+.cuadrantes li i{width:8px;height:8px;border-radius:999px;flex:none;transform:translateY(-1px)}
+.vacio{color:var(--soft);font-size:13.5px}
+.comentarios{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.comentarios div{background:var(--bg);border-radius:14px;padding:12px 14px;font-size:13.5px}
+.confirmar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);border-radius:999px;padding:10px 20px;font-weight:600;font-size:14px}
+
+@media (max-width:720px){
+  .hero{grid-template-columns:1fr}
+  .eslabones{height:110px}
+  .campos,.mapa,.sintesis,.cuadrantes,.comentarios{grid-template-columns:1fr}
+  .focos-lista{grid-template-columns:1fr 1fr}
+  .escala-ref{grid-template-columns:1fr 1fr}
+  .opciones{grid-template-columns:1fr}
+  .opciones label{justify-content:flex-start;padding-inline:16px}
+  .comp-fila{grid-template-columns:minmax(0,1fr) 100px}
+  .comp-fila .db{grid-column:1 / -1;grid-row:2}
+  .comp-head{display:none}
+}
+@media (prefers-reduced-motion: no-preference){
+  .vista{animation:entra .28s ease-out}
+  @keyframes entra{from{transform:translateY(6px)}to{transform:none}}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="logo-pill" id="logo" aria-label="MAS Consultores"><svg aria-hidden="true" focusable="false" id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 802.75 340.05">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #edb321;
+      }
+
+      .cls-2 {
+        fill: #d62216;
+      }
+
+      .cls-3 {
+        fill: #23398d;
+      }
+
+      .cls-4 {
+        fill: #009739;
+      }
+
+      .cls-5 {
+        fill: #833d8e;
+      }
+    </style>
+  </defs>
+  <g id="Capa_1-2" data-name="Capa 1">
+    <g>
+      <polygon points="455.32 195.25 453.6 195.25 413.12 96.49 374.79 96.49 374.79 243.49 404.93 243.49 404.93 147.45 406.15 147.45 444.19 242.77 464.72 242.77 502.76 147.81 503.98 147.81 503.98 243.49 534.13 243.49 534.13 96.49 495.8 96.49 455.32 195.25"/>
+      <path d="M594.37,96.49l-50.74,146.99h33.3l10.9-33.52h53.07l10.88,33.52h33.3l-50.67-146.99h-40.05ZM595.73,185.71l18.1-55.63h1.15l18.06,55.63h-37.3Z"/>
+      <path d="M799.42,185.21c-2.18-4.74-5.23-8.86-9.15-12.35-3.92-3.49-8.57-6.43-13.92-8.83-5.36-2.39-11.25-4.31-17.66-5.74l-13.2-3.16c-3.21-.72-6.22-1.59-9.05-2.62-2.82-1.03-5.31-2.25-7.46-3.66-2.15-1.41-3.84-3.1-5.06-5.06-1.22-1.96-1.79-4.26-1.69-6.89,0-3.16.92-5.98,2.76-8.47,1.84-2.48,4.51-4.44,8.01-5.85,3.49-1.41,7.77-2.12,12.84-2.12,7.47,0,13.38,1.61,17.73,4.81,4.36,3.21,6.81,7.7,7.39,13.49h29.79c-.15-8.75-2.49-16.46-7.03-23.11-4.55-6.65-10.9-11.84-19.06-15.57-8.16-3.74-17.69-5.6-28.6-5.6s-20.29,1.87-28.71,5.6c-8.42,3.73-15.04,8.92-19.85,15.57-4.81,6.65-7.19,14.43-7.14,23.33-.05,10.86,3.52,19.5,10.7,25.91,7.18,6.41,16.97,11.13,29.35,14.14l16.01,4.02c5.35,1.29,9.89,2.72,13.6,4.3,3.7,1.58,6.53,3.49,8.47,5.74,1.94,2.25,2.91,5.02,2.91,8.32,0,3.54-1.07,6.68-3.23,9.4-2.15,2.73-5.18,4.86-9.08,6.39-3.9,1.53-8.49,2.29-13.75,2.29s-10.15-.82-14.39-2.47c-4.24-1.65-7.61-4.11-10.13-7.39-2.51-3.27-3.93-7.38-4.27-12.31h-30.08c.24,10.58,2.81,19.44,7.72,26.6,4.9,7.15,11.75,12.55,20.53,16.18,8.78,3.64,19.1,5.45,30.97,5.45s22.19-1.81,30.68-5.42c8.49-3.61,15-8.7,19.52-15.28,4.52-6.58,6.81-14.37,6.85-23.36-.05-6.12-1.16-11.56-3.33-16.29"/>
+      <path class="cls-1" d="M170.02,11.05c-13.88,0-25.13,11.25-25.13,25.13v267.7h0c.01,13.86,11.26,25.1,25.12,25.1s25.11-11.24,25.13-25.1V36.18c0-13.88-11.25-25.13-25.13-25.13"/>
+      <path d="M303.86,144.91h-83.6c-6.43,0-12.85-2.46-17.76-7.36-4.9-4.9-7.35-11.32-7.36-17.74h0v50.22h0v50.26h0c0-6.43,2.45-12.86,7.36-17.77,4.9-4.9,11.33-7.36,17.76-7.36h83.6c13.88,0,25.13-11.25,25.13-25.13s-11.25-25.13-25.13-25.13"/>
+      <path class="cls-4" d="M332.67,7.38c-9.81-9.81-25.72-9.81-35.53,0l-94.66,94.65h0c-4.9,4.91-7.35,11.34-7.34,17.77,0,6.42,2.46,12.84,7.36,17.74,4.9,4.9,11.33,7.36,17.76,7.36,6.42,0,12.85-2.45,17.76-7.34h0s7.38-7.38,7.38-7.38l87.28-87.28c9.81-9.81,9.81-25.72,0-35.53"/>
+      <path class="cls-3" d="M332.67,297.15l-87.28-87.28-7.38-7.38h0c-4.91-4.9-11.34-7.34-17.76-7.34-6.43,0-12.85,2.46-17.76,7.36-4.91,4.91-7.36,11.34-7.36,17.77s2.45,12.85,7.34,17.75h0s94.66,94.66,94.66,94.66c9.81,9.81,25.72,9.81,35.53,0,9.81-9.81,9.81-25.72,0-35.53"/>
+      <path d="M36.18,144.89h83.6c6.43,0,12.85-2.46,17.76-7.36,4.9-4.9,7.35-11.32,7.36-17.74h0v50.22h0v50.26h0c0-6.43-2.45-12.86-7.36-17.77-4.9-4.9-11.33-7.36-17.76-7.36H36.18c-13.88,0-25.13-11.25-25.13-25.13s11.25-25.13,25.13-25.13"/>
+      <path class="cls-5" d="M7.36,7.36c9.81-9.81,25.72-9.81,35.53,0l94.66,94.66h0c4.9,4.91,7.35,11.34,7.34,17.77,0,6.42-2.46,12.84-7.36,17.74-4.9,4.9-11.33,7.36-17.76,7.36-6.43,0-12.85-2.45-17.76-7.34h0l-7.38-7.38L7.36,42.89C-2.45,33.08-2.45,17.17,7.36,7.36"/>
+      <path class="cls-2" d="M7.36,297.14l87.28-87.28,7.38-7.38h0c4.91-4.9,11.33-7.35,17.76-7.34,6.43,0,12.85,2.46,17.76,7.36,4.91,4.91,7.36,11.34,7.36,17.77,0,6.42-2.45,12.85-7.34,17.75l-94.66,94.66c-9.81,9.81-25.72,9.81-35.53,0-9.81-9.81-9.81-25.72,0-35.53"/>
+    </g>
+  </g>
+</svg></span>
+    <nav class="tabs" id="tabs" hidden></nav>
+  </div>
+  <main id="app"></main>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const FOCOS = [
+  { id:'com', nombre:'Comercial y consultivo', color:'var(--f1)', items:[
+    ['Reuniones comerciales y propuestas','Conduce reuniones comerciales y elabora propuestas que responden a lo que el cliente necesita.'],
+    ['Diagnóstico de necesidades','Indaga y precisa la necesidad real del cliente antes de proponer una solución.'],
+    ['Relación consultiva con clientes','Construye relaciones de confianza en las que el cliente la consulta como asesora o asesor.'],
+    ['Detección de oportunidades','Identifica nuevas oportunidades de trabajo dentro de los clientes y proyectos en curso.']]},
+  { id:'dis', nombre:'Diseño instruccional', color:'var(--f2)', items:[
+    ['Estructura y bajada de contenidos','Organiza los contenidos en una secuencia clara y los traduce a actividades de aprendizaje.'],
+    ['Tiempos de actividades','Estima y distribuye de forma realista el tiempo de cada actividad del programa.'],
+    ['Materiales y dinámica en sala','Diseña materiales y dinámicas que funcionan bien con los participantes en sala.'],
+    ['Inducción de facilitadores','Prepara a los facilitadores para que comprendan el diseño y lo ejecuten con fidelidad.']]},
+  { id:'ges', nombre:'Gestión y ejecución', color:'var(--f3)', items:[
+    ['Coordinación con facilitadores','Coordina agendas, roles y acuerdos con los facilitadores a lo largo del proyecto.'],
+    ['Supervisión de primeros talleres','Observa los primeros talleres y ajusta a tiempo lo que no está funcionando.'],
+    ['Gestión de emergentes','Resuelve imprevistos de la ejecución con criterio y sin afectar la calidad.'],
+    ['Contacto directo con cliente','Mantiene al cliente informado y alineado durante toda la ejecución.']]},
+  { id:'rep', nombre:'Reporte y análisis', color:'var(--f4)', items:[
+    ['Consolidación de hallazgos','Integra la información de talleres y fuentes en hallazgos claros.'],
+    ['Lectura de emergentes','Interpreta lo que surge en la ejecución y lo conecta con la necesidad del cliente.'],
+    ['Presentación de resultados','Presenta los resultados al cliente con claridad y autonomía.'],
+    ['Recomendaciones al cliente','Propone recomendaciones accionables y con mirada estratégica.']]}
+];
+FOCOS.forEach(f => f.items = f.items.map((it,i) => ({ id:`${f.id}${i+1}`, nombre:it[0], desc:it[1] })));
+
+const NIVELES = [
+  null,
+  { n:'Desafío', d:'Aún requiere apoyo frecuente.' },
+  { n:'En desarrollo', d:'Lo hace, con apoyo o de forma irregular.' },
+  { n:'Sólido', d:'Lo hace bien y con autonomía.' },
+  { n:'Fortaleza', d:'Destaca; otros pueden apoyarse en esto.' },
+  { n:'Fortaleza diferenciadora', d:'Es un sello propio, poco común en el rol.' }
+];
+const INTERES = [null,'Bajo','Medio','Alto'];
+const RELACIONES = ['Jefatura directa','Par / colega','Colaborador/a','Cliente interno','Otra relación'];
+const CLAVE = 'mapa-fortalezas-mas-v1';
+
+const vacio = () => ({ perfil:null, auto:{resp:{},interes:{},coment:{}}, par:null, vista:'inicio', paso:0, modo:'auto', ejemplo:false });
+let S = cargar();
+
+function cargar(){
+  try { const s = JSON.parse(localStorage.getItem(CLAVE)); if (s && s.auto) return s; } catch(e){}
+  return vacio();
+}
+function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(S)); } catch(e){} }
+function ir(vista, extra={}){ Object.assign(S, {vista}, extra); guardar(); render(); window.scrollTo({top:0}); }
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => n.toFixed(1).replace('.', ',');
+const prom = (resp, f) => f.items.reduce((a,it) => a + (resp[it.id]||0), 0) / f.items.length;
+const nivelChip = v => `<span class="nivel n${v}">${NIVELES[v].n}</span>`;
+const estadoFoco = p => p >= 3.5 ? {t:'Fortaleza', c:'b-fort'} : p >= 1.5 ? {t:'En desarrollo', c:'b-dev'} : {t:'Desafío', c:'b-des'};
+const primerNombre = () => esc((S.perfil?.nombre || '').trim().split(/\s+/)[0] || 'la persona evaluada');
+
+/* ---------- Vistas ---------- */
+function vInicio(){
+  return `<section class="vista stack-lg">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">Autodiagnóstico y proyección profesional</p>
+        <h1 style="margin-top:10px">Mapa de fortalezas y focos de desarrollo</h1>
+        <p class="lead">Evalúa los 4 focos del rol en 16 conductas. Al terminar verás tu mapa, y podrás pedir a otra persona que te evalúe con los mismos ítems para comparar ambas miradas.</p>
+      </div>
+      <div class="eslabones" aria-hidden="true">
+        <span style="height:62%;background:var(--f1)"></span>
+        <span style="height:38%;background:var(--f2)"></span>
+        <span style="height:100%;background:var(--accent)"></span>
+        <span style="height:76%;background:var(--ink)"></span>
+      </div>
+    </div>
+
+    <form class="card stack" id="f-inicio">
+      <h2>Antes de comenzar</h2>
+      <div class="campos">
+        <div class="campo"><label for="i-nombre">Tu nombre</label><input id="i-nombre" required autocomplete="name" placeholder="Ej.: Camila Rojas"></div>
+        <div class="campo"><label for="i-rol">Rol</label><input id="i-rol" required value="Jefatura de Proyecto"></div>
+      </div>
+      <div class="focos-lista">
+        ${FOCOS.map((f,i) => `<div class="foco-chip"><i style="background:${f.color}"></i>${i+1}. ${f.nombre}</div>`).join('')}
+      </div>
+      <div class="acciones">
+        <button class="btn" type="submit">Comenzar autoevaluación</button>
+        <button class="btn texto" type="button" id="b-ejemplo">Ver un reporte de ejemplo</button>
+      </div>
+    </form>
+
+    <section class="stack">
+      <p class="eyebrow">Escala de respuesta</p>
+      <div class="escala-ref">${[1,2,3,4,5].map(v => `<div>${nivelChip(v)}<span>${NIVELES[v].d}</span></div>`).join('')}</div>
+    </section>
+  </section>`;
+}
+
+function vCuestionario(){
+  const esPar = S.modo === 'par';
+  const datos = esPar ? S.par : S.auto;
+  const f = FOCOS[S.paso];
+  const quien = esPar ? primerNombre() : null;
+  return `<form class="vista stack-lg" id="f-cuest" novalidate>
+    <div class="stack">
+      <div class="progreso" aria-label="Foco ${S.paso+1} de 4">${FOCOS.map((x,i) => `<span style="${i<=S.paso?`background:${x.color}`:''}"></span>`).join('')}</div>
+      <p class="eyebrow">${esPar ? `Evaluación de par · ${esc(S.par.nombre)} evalúa a ${esc(S.perfil.nombre)}` : `Autoevaluación · ${esc(S.perfil.nombre)}`} · Foco ${S.paso+1} de 4</p>
+    </div>
+    <div class="card stack">
+      <div class="foco-head">
+        <span class="foco-num" style="background:${f.color}">${S.paso+1}</span>
+        <div><h2>${f.nombre}</h2><p class="muted" style="margin-top:4px">${esPar ? `¿Qué tan desarrollada observas cada conducta en ${quien}?` : '¿Qué tan desarrollada está en ti cada conducta?'}</p></div>
+      </div>
+      <div>
+        ${f.items.map(it => `<fieldset class="item" style="border-left:0;border-right:0;border-bottom:0;margin:0;padding-inline:0">
+          <legend style="padding:0;float:left;width:100%"><h3>${it.nombre}</h3><p class="desc" style="margin-top:3px">${it.desc}</p></legend>
+          <div class="opciones">${[1,2,3,4,5].map(v => {
+            const id = `r-${it.id}-${v}`, ch = datos.resp[it.id] === v;
+            return `<input type="radio" name="${it.id}" id="${id}" value="${v}" ${ch?'checked':''}><label for="${id}" class="${ch?`n${v}`:''}" data-v="${v}"><b>${v}</b> ${NIVELES[v].n}</label>`;
+          }).join('')}</div>
+        </fieldset>`).join('')}
+      </div>
+      ${esPar ? '' : `<fieldset class="item" style="border-left:0;border-right:0;border-bottom:0;margin:0;padding-inline:0">
+        <legend style="padding:0;float:left;width:100%"><h3>Interés en proyectarte en este foco</h3><p class="desc" style="margin-top:3px">¿Cuánto te gustaría crecer o especializarte aquí en los próximos años?</p></legend>
+        <div class="interes">${[1,2,3].map(v => `<input type="radio" name="interes" id="in-${v}" value="${v}" ${S.auto.interes[f.id]===v?'checked':''}><label for="in-${v}">${INTERES[v]}</label>`).join('')}</div>
+      </fieldset>`}
+      <div class="campo item">
+        <label for="c-foco">${esPar ? `Sugerencia de desarrollo para ${quien} (opcional)` : 'Tu foco de desarrollo en esta área (opcional)'}</label>
+        <textarea id="c-foco" placeholder="${esPar ? 'Ej.: observar más facilitaciones antes de diseñar.' : 'Ej.: ampliar repertorio metodológico y contar con más tiempo de estudio.'}">${esc(datos.coment[f.id])}</textarea>
+      </div>
+    </div>
+    <div class="acciones">
+      ${S.paso > 0 ? '<button class="btn borde" type="button" id="b-atras">Atrás</button>' : ''}
+      <button class="btn" type="submit">${S.paso < 3 ? 'Siguiente foco' : (esPar ? 'Terminar y comparar' : 'Ver mi reporte')}</button>
+      <span class="aviso" id="aviso" hidden></span>
+    </div>
+  </form>`;
+}
+
+function textoFoco(f, resp, coment){
+  if (coment && coment.trim()) return esc(coment.trim());
+  const min = Math.min(...f.items.map(it => resp[it.id]));
+  const bajos = f.items.filter(it => resp[it.id] === min).map(it => it.nombre.toLowerCase());
+  const lista = bajos.length > 1 ? bajos.slice(0,-1).join(', ') + ' y ' + bajos.at(-1) : bajos[0];
+  return min >= 4 ? `Seguir elevando ${lista} hacia un sello diferenciador.` : `Priorizar ${lista}.`;
+}
+
+function vReporte(){
+  const r = S.auto.resp;
+  const promedios = FOCOS.map(f => ({ f, p: prom(r, f) }));
+  const items = FOCOS.flatMap(f => f.items.map(it => ({ ...it, f, v:r[it.id] })));
+  const max = Math.max(...items.map(i => i.v));
+  const top = items.filter(i => i.v === max && max >= 4);
+  const menor = promedios.reduce((a,b) => b.p < a.p ? b : a);
+  const maxInt = Math.max(...FOCOS.map(f => S.auto.interes[f.id] || 0));
+  const proy = FOCOS.filter(f => (S.auto.interes[f.id]||0) === maxInt);
+
+  return `<section class="vista stack-lg">
+    ${S.ejemplo ? bandaEjemplo() : ''}
+    <div class="stack">
+      <p class="eyebrow">Autoevaluación · ${esc(S.perfil.rol)}</p>
+      <h1>Mapa de fortalezas de ${esc(S.perfil.nombre)}</h1>
+      <div class="leyenda">
+        <span><i class="dot" style="background:var(--l5)"></i>Fortaleza diferenciadora</span>
+        <span><i class="dot" style="background:var(--l4)"></i>Fortaleza</span>
+        <span><i class="dot" style="background:var(--l3)"></i>Sólido</span>
+        <span><i class="dot" style="background:var(--l2)"></i>En desarrollo</span>
+        <span><i class="dot" style="background:var(--l1)"></i>Desafío</span>
+      </div>
+    </div>
+
+    <div class="mapa">
+      ${promedios.map(({f,p},i) => { const e = estadoFoco(p); return `<article class="foco-card">
+        <header><h3><i style="background:${f.color}"></i>${i+1}. ${f.nombre}</h3><span class="badge ${e.c}">${e.t}</span></header>
+        <div class="promedio"><span class="pista"><b style="width:${p/5*100}%;background:${f.color}"></b></span><span><span class="num">${fmt(p)}</span> / 5</span></div>
+        <div class="stack" style="gap:8px">${f.items.map(it => `<div class="fila-item"><span>${it.nombre}</span>${nivelChip(r[it.id])}</div>`).join('')}</div>
+        <div class="foco-dev"><span class="eyebrow">Foco de desarrollo</span><span>${textoFoco(f, r, S.auto.coment[f.id])}</span></div>
+      </article>`; }).join('')}
+    </div>
+
+    <div class="sintesis">
+      <div class="card destacada"><span class="eyebrow">${max === 5 ? 'Fortaleza diferenciadora' : 'Mayor fortaleza'}</span>
+        <strong>${top.length ? top.slice(0,4).map(i => esc(i.nombre)).join(' + ') : 'Aún sin conductas en nivel Fortaleza'}</strong></div>
+      <div class="card"><span class="eyebrow">Foco prioritario</span>
+        <strong>${menor.f.nombre}</strong><span class="muted" style="font-size:13.5px">Promedio ${fmt(menor.p)} de 5, el más bajo del mapa.</span></div>
+      <div class="card"><span class="eyebrow">Proyección</span>
+        <strong>${maxInt ? proy.map(f => f.nombre).join(' · ') : 'Sin preferencia declarada'}</strong><span class="muted" style="font-size:13.5px">${maxInt ? `Interés ${INTERES[maxInt].toLowerCase()} declarado en ${proy.length > 1 ? "estos focos" : "este foco"}.` : ''}</span></div>
+    </div>
+
+    ${S.par ? `<div class="cierre"><div><h3>Ya tienes una evaluación de par</h3><p class="muted">${esc(S.par.nombre)} (${esc(S.par.relacion.toLowerCase())}) respondió los mismos ítems.</p></div>
+      <button class="btn amarillo" id="b-ver-comp">Ver comparación</button></div>`
+    : `<div class="cierre"><div><h3>Suma una segunda mirada</h3><p class="muted">Pide a una jefatura, par o colaborador que te evalúe ahora con los mismos 16 ítems. Luego verás en qué coinciden y en qué difieren sus miradas.</p></div>
+      <button class="btn amarillo" id="b-invitar">Pedir evaluación de par</button></div>`}
+    ${pie()}
+  </section>`;
+}
+
+function vParInicio(){
+  return `<form class="vista stack-lg" id="f-par">
+    <div class="stack">
+      <p class="eyebrow">Evaluación de par</p>
+      <h1>Entrega el dispositivo a quien evaluará a ${primerNombre()}</h1>
+      <p class="muted" style="max-width:60ch">Responderás las mismas 16 conductas que ${primerNombre()} usó para autoevaluarse. Sus respuestas no se muestran mientras evalúas. Responde según lo que has observado en el trabajo.</p>
+    </div>
+    <div class="card stack">
+      <div class="campos">
+        <div class="campo"><label for="p-nombre">Tu nombre</label><input id="p-nombre" required autocomplete="off" placeholder="Ej.: Andrés Soto"></div>
+        <div class="campo"><label for="p-rel">Tu relación con ${primerNombre()}</label>
+          <select id="p-rel">${RELACIONES.map(r => `<option>${r}</option>`).join('')}</select></div>
+      </div>
+      <div class="acciones">
+        <button class="btn" type="submit">Comenzar evaluación</button>
+        <button class="btn texto" type="button" id="b-volver">Volver al reporte</button>
+      </div>
+    </div>
+  </form>`;
+}
+
+function clasif(yo, par){
+  const d = par - yo;
+  if (d >= 1) return {t:`Par ve +${d}`, c:'g-oculta', k:'oculta'};
+  if (d <= -1) return {t:`Te ves +${-d}`, c:'g-ciego', k:'ciego'};
+  return {t:'Coinciden', c:'g-igual', k:'igual'};
+}
+function dumbbell(yo, par, color){
+  const x = v => (v-1)/4*100;
+  const a = Math.min(yo,par), b = Math.max(yo,par);
+  return `<div class="db" role="img" aria-label="Autoevaluación ${fmt(yo)}, par ${fmt(par)}">
+    ${[1,2,3,4,5].map(v => `<i class="tick" style="left:${x(v)}%"></i>`).join('')}
+    ${b > a ? `<i class="conn" style="left:${x(a)}%;width:${x(b)-x(a)}%;background:${color}"></i>` : ''}
+    <i class="yo" style="left:${x(yo)}%"></i><i class="par ${Math.abs(yo-par)<.01?'igual':''}" style="left:${x(par)}%"></i>
+  </div>`;
+}
+
+function vComparacion(){
+  const a = S.auto.resp, p = S.par.resp;
+  const items = FOCOS.flatMap(f => f.items.map(it => ({ ...it, f, yo:a[it.id], par:p[it.id] })));
+  const grupos = {
+    compartidas: items.filter(i => i.yo >= 4 && i.par >= 4),
+    ocultas: items.filter(i => i.par - i.yo >= 1),
+    ciegos: items.filter(i => i.yo - i.par >= 1),
+    desarrollo: items.filter(i => i.yo <= 2 && i.par <= 2)
+  };
+  const coinc = items.filter(i => i.yo === i.par).length;
+  const lista = (arr, vacioTxt) => arr.length
+    ? `<ul>${arr.map(i => `<li><i style="background:${i.f.color}"></i><span>${esc(i.nombre)} <span class="muted" style="font-variant-numeric:tabular-nums">(${i.yo} / ${i.par})</span></span></li>`).join('')}</ul>`
+    : `<p class="vacio">${vacioTxt}</p>`;
+  const eje = `<div class="comp-fila comp-head" style="padding-block:0 4px;border-top:0"><span></span><div class="escala-eje">${[1,2,3,4,5].map(v=>`<span>${v}</span>`).join('')}</div><span></span></div>`;
+
+  return `<section class="vista stack-lg">
+    ${S.ejemplo ? bandaEjemplo() : ''}
+    <div class="stack">
+      <p class="eyebrow">Autoevaluación vs. evaluación de par</p>
+      <h1>Dos miradas sobre ${esc(S.perfil.nombre)}</h1>
+      <p class="muted" style="max-width:62ch">${esc(S.par.nombre)} (${esc(S.par.relacion.toLowerCase())}) evaluó los mismos 16 ítems. Coinciden exactamente en ${coinc} de 16. Una brecha de 1 punto o más se marca como diferencia.</p>
+      <div class="leyenda">
+        <span><i class="dot" style="background:var(--fg)"></i>Autoevaluación</span>
+        <span><i class="dot" style="background:var(--accent)"></i>Evaluación de par</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:14px">Promedio por foco</h2>
+      ${eje}
+      ${FOCOS.map((f,i) => { const y = prom(a,f), q = prom(p,f), c = clasif(Math.round(y*10)/10, Math.round(q*10)/10);
+        return `<div class="comp-fila"><span class="nombre">${i+1}. ${f.nombre}<small>Tú ${fmt(y)} · Par ${fmt(q)}</small></span>${dumbbell(y,q,f.color)}<span class="brecha ${c.c}">${Math.abs(q-y) < .5 ? 'Coinciden' : (q>y ? `Par ve +${fmt(q-y)}` : `Te ves +${fmt(y-q)}`)}</span></div>`; }).join('')}
+    </div>
+
+    <div class="cuadrantes">
+      <div class="card"><span class="eyebrow">Fortalezas compartidas</span><p class="muted" style="font-size:13.5px">Ambos ven nivel Fortaleza o superior.</p>${lista(grupos.compartidas,'Ninguna conducta llega a Fortaleza en ambas miradas.')}</div>
+      <div class="card"><span class="eyebrow">Fortalezas por reconocer</span><p class="muted" style="font-size:13.5px">El par te ve más alto que tú.</p>${lista(grupos.ocultas,'El par no te ve más alto en ninguna conducta.')}</div>
+      <div class="card"><span class="eyebrow">Posibles puntos ciegos</span><p class="muted" style="font-size:13.5px">Te ves más alto que el par.</p>${lista(grupos.ciegos,'No te ves más alto que el par en ninguna conducta.')}</div>
+      <div class="card"><span class="eyebrow">Focos de desarrollo compartidos</span><p class="muted" style="font-size:13.5px">Ambos ven En desarrollo o Desafío.</p>${lista(grupos.desarrollo,'Ninguna conducta queda baja en ambas miradas.')}</div>
+    </div>
+
+    ${FOCOS.map((f,i) => `<div class="card">
+      <div class="foco-head" style="margin-bottom:12px"><span class="foco-num" style="background:${f.color};width:36px;height:36px;font-size:15px">${i+1}</span><h2 style="align-self:center">${f.nombre}</h2></div>
+      ${eje}
+      ${f.items.map(it => { const y=a[it.id], q=p[it.id], c=clasif(y,q);
+        return `<div class="comp-fila"><span class="nombre">${it.nombre}<small>Tú: ${NIVELES[y].n} · Par: ${NIVELES[q].n}</small></span>${dumbbell(y,q,f.color)}<span class="brecha ${c.c}">${c.t}</span></div>`; }).join('')}
+      ${(S.auto.coment[f.id]||'').trim() || (S.par.coment[f.id]||'').trim() ? `<div class="comentarios">
+        <div><span class="eyebrow">Tu foco de desarrollo</span><p>${esc(S.auto.coment[f.id]) || '<span class="vacio">Sin comentario.</span>'}</p></div>
+        <div><span class="eyebrow">Sugerencia del par</span><p>${esc(S.par.coment[f.id]) || '<span class="vacio">Sin comentario.</span>'}</p></div></div>` : ''}
+    </div>`).join('')}
+    ${pie()}
+  </section>`;
+}
+
+function bandaEjemplo(){
+  return `<div class="ejemplo-banda"><span>Estás viendo datos de ejemplo, inspirados en el mapa de una Jefatura de Proyecto.</span><button id="b-salir-ej">Hacer mi autoevaluación</button></div>`;
+}
+function pie(){
+  return `<div class="acciones" id="pie">
+    <button class="btn borde" id="b-copiar">Copiar resumen</button>
+    ${S.par ? '<button class="btn texto" id="b-rehacer-par">Reemplazar evaluación de par</button>' : ''}
+    <button class="btn texto" id="b-reiniciar">Comenzar de nuevo</button>
+  </div>`;
+}
+
+/* ---------- Render y eventos ---------- */
+const $ = id => document.getElementById(id);
+function render(){
+  const app = $('app');
+  const v = S.vista;
+  app.innerHTML = v === 'inicio' ? vInicio() : v === 'cuestionario' ? vCuestionario() : v === 'reporte' ? vReporte()
+    : v === 'par-inicio' ? vParInicio() : v === 'comparacion' ? vComparacion() : vInicio();
+  const tabs = $('tabs');
+  tabs.hidden = !(S.par && (v === 'reporte' || v === 'comparacion'));
+  tabs.innerHTML = `<button aria-current="${v==='reporte'}" data-v="reporte">Autoevaluación</button><button aria-current="${v==='comparacion'}" data-v="comparacion">Comparación</button>`;
+  conectar();
+}
+
+function conectar(){
+  $('f-inicio')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const nombre = $('i-nombre').value.trim(), rol = $('i-rol').value.trim();
+    if (!nombre || !rol) return;
+    S = vacio(); S.perfil = {nombre, rol};
+    ir('cuestionario', {modo:'auto', paso:0});
+  });
+  $('b-ejemplo')?.addEventListener('click', cargarEjemplo);
+
+  const fc = $('f-cuest');
+  if (fc){
+    const datos = S.modo === 'par' ? S.par : S.auto;
+    const f = FOCOS[S.paso];
+    fc.addEventListener('change', e => {
+      const t = e.target;
+      if (t.type === 'radio' && t.name !== 'interes'){
+        datos.resp[t.name] = +t.value;
+        fc.querySelectorAll(`input[name="${t.name}"] + label`).forEach(l => l.className = '');
+        t.nextElementSibling.className = `n${t.value}`;
+      }
+      if (t.name === 'interes') S.auto.interes[f.id] = +t.value;
+      guardar();
+    });
+    $('c-foco').addEventListener('input', e => { datos.coment[f.id] = e.target.value; guardar(); });
+    $('b-atras')?.addEventListener('click', () => ir('cuestionario', {paso:S.paso-1}));
+    fc.addEventListener('submit', e => {
+      e.preventDefault();
+      const faltan = f.items.filter(it => !datos.resp[it.id]);
+      if (faltan.length){
+        const av = $('aviso'); av.hidden = false;
+        av.textContent = faltan.length === 1 ? `Falta responder "${faltan[0].nombre}".` : `Faltan ${faltan.length} conductas por responder.`;
+        fc.querySelector(`input[name="${faltan[0].id}"]`).focus();
+        return;
+      }
+      if (S.paso < 3) return ir('cuestionario', {paso:S.paso+1});
+      ir(S.modo === 'par' ? 'comparacion' : 'reporte');
+    });
+  }
+
+  $('b-invitar')?.addEventListener('click', () => ir('par-inicio'));
+  $('b-ver-comp')?.addEventListener('click', () => ir('comparacion'));
+  $('b-volver')?.addEventListener('click', () => ir('reporte'));
+  $('f-par')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const nombre = $('p-nombre').value.trim();
+    if (!nombre) return;
+    S.par = {nombre, relacion:$('p-rel').value, resp:{}, coment:{}};
+    ir('cuestionario', {modo:'par', paso:0});
+  });
+  $('b-salir-ej')?.addEventListener('click', () => { S = vacio(); ir('inicio'); });
+  $('b-copiar')?.addEventListener('click', copiarResumen);
+  $('b-rehacer-par')?.addEventListener('click', () => confirmarEn('b-rehacer-par', 'Se borrará la evaluación de par actual.', () => { S.par = null; ir('par-inicio'); }));
+  $('b-reiniciar')?.addEventListener('click', () => confirmarEn('b-reiniciar', 'Se borrarán todas las respuestas.', () => { S = vacio(); ir('inicio'); }));
+}
+
+function confirmarEn(id, msg, accion){
+  const pie = $('pie');
+  pie.innerHTML = `<div class="confirmar"><span>${msg}</span><button class="btn" id="b-si">Confirmar</button><button class="btn texto" id="b-no">Cancelar</button></div>`;
+  $('b-si').addEventListener('click', accion);
+  $('b-no').addEventListener('click', render);
+}
+
+function copiarResumen(){
+  const a = S.auto.resp;
+  let t = `Mapa de fortalezas — ${S.perfil.nombre} (${S.perfil.rol})\n`;
+  FOCOS.forEach((f,i) => {
+    const y = prom(a,f);
+    t += `\n${i+1}. ${f.nombre}: autoevaluación ${fmt(y)}${S.par ? ` · par ${fmt(prom(S.par.resp,f))}` : ''} — ${estadoFoco(y).t}\n`;
+    f.items.forEach(it => t += `   - ${it.nombre}: ${NIVELES[a[it.id]].n}${S.par ? ` / par: ${NIVELES[S.par.resp[it.id]].n}` : ''}\n`);
+  });
+  const avisar = m => { const el = $('toast'); el.textContent = m; el.hidden = false; setTimeout(() => el.hidden = true, 2200); };
+  try {
+    navigator.clipboard.writeText(t).then(() => avisar('Resumen copiado'), () => fallback(t));
+  } catch(e){ fallback(t); }
+  function fallback(txt){
+    const pie = $('pie');
+    pie.insertAdjacentHTML('afterend', `<div class="campo" style="margin-top:12px"><label for="txt-resumen">Selecciona y copia el resumen</label><textarea id="txt-resumen" rows="10">${esc(txt)}</textarea></div>`);
+    $('txt-resumen').select();
+  }
+}
+
+function cargarEjemplo(){
+  const auto = { com1:4,com2:4,com3:5,com4:4, dis1:3,dis2:1,dis3:1,dis4:2, ges1:4,ges2:4,ges3:4,ges4:5, rep1:4,rep2:4,rep3:3,rep4:4 };
+  const par  = { com1:4,com2:5,com3:5,com4:3, dis1:3,dis2:2,dis3:2,dis4:2, ges1:5,ges2:3,ges3:4,ges4:5, rep1:4,rep2:4,rep3:4,rep4:3 };
+  S = {
+    perfil:{nombre:'Jefa de Proyecto (ejemplo)', rol:'Jefatura de Proyecto'},
+    auto:{ resp:auto, interes:{com:3,dis:2,ges:2,rep:2}, coment:{
+      com:'Profundizar mirada comercial, argumentación de valor y cierre.',
+      dis:'Ampliar repertorio metodológico, observar más facilitaciones y contar con mayor tiempo de estudio.',
+      ges:'Evolucionar hacia una observación más estratégica de la ejecución y transferencia.',
+      rep:'Seguir elevando el formato visual y la profundidad estratégica de las recomendaciones.'}},
+    par:{ nombre:'Gerente de área (ejemplo)', relacion:'Jefatura directa', resp:par, coment:{
+      dis:'Reservar bloques de estudio antes de diseñar cada programa.',
+      rep:'Llegar a la presentación con dos o tres recomendaciones priorizadas.'}},
+    vista:'reporte', paso:0, modo:'auto', ejemplo:true
+  };
+  guardar(); render(); window.scrollTo({top:0});
+}
+
+$('tabs').addEventListener('click', e => { const v = e.target.dataset?.v; if (v) ir(v); });
+render();
+</script>
+</body>
+</html>
