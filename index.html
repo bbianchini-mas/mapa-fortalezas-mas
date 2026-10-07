@@ -179,7 +179,33 @@ button,input,select,textarea{font:inherit;color:inherit}
 .confirmar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);border-radius:999px;padding:10px 20px;font-weight:600;font-size:14px}
 
-@media (max-width:720px){
+.panel-ia a{color:var(--fg);font-weight:600}
+#impresion{display:none}
+
+/* PDF: solo se imprime el reporte armado en #impresion, siempre en tema claro */
+@page{size:A4;margin:12mm}
+@media print{
+  :root{
+    --bg:#F4F4F4; --surface:#FFFFFF; --fg:#000000; --muted:#49494C; --soft:#767479;
+    --line:rgba(0,0,0,.12); --track:rgba(0,0,0,.08); --ink:#000000; --on-ink:#FFFFFF;
+    --f1:#0C1C91; --l4:#000000; --l4t:#FFFFFF; color-scheme:light; padding:0}
+  html,body{background:#FFFFFF !important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-size:12px}
+  .wrap,.toast{display:none !important}
+  #impresion{display:flex;flex-direction:column;gap:18px}
+  #impresion .vista{animation:none}
+  #impresion .acciones,#impresion .cierre,#impresion .panel-ia,#impresion .ejemplo-banda button{display:none !important}
+  #impresion .stack-lg{gap:18px}
+  #impresion h1{font-size:28px}
+  #impresion .card,#impresion .foco-card,#impresion .comp-fila,#impresion .sintesis{break-inside:avoid}
+  #impresion .card,#impresion .foco-card{padding:14px}
+  #impresion .salto{break-before:page}
+  .imp-cabecera{display:flex;justify-content:space-between;align-items:center;font-size:11px}
+  .imp-cabecera .logo-pill{padding:0}
+}
+
+@media screen and (max-width:720px){
   .hero{grid-template-columns:1fr}
   .eslabones{height:110px}
   .campos,.mapa,.sintesis,.cuadrantes,.comentarios{grid-template-columns:1fr}
@@ -244,6 +270,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </div>
   <main id="app"></main>
 </div>
+<div id="impresion" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -477,13 +504,7 @@ function dumbbell(yo, par, color){
 
 function vComparacion(){
   const a = S.auto.resp, p = S.par.resp;
-  const items = FOCOS.flatMap(f => f.items.map(it => ({ ...it, f, yo:a[it.id], par:p[it.id] })));
-  const grupos = {
-    compartidas: items.filter(i => i.yo >= 4 && i.par >= 4),
-    ocultas: items.filter(i => i.par - i.yo >= 1),
-    ciegos: items.filter(i => i.yo - i.par >= 1),
-    desarrollo: items.filter(i => i.yo <= 2 && i.par <= 2)
-  };
+  const { items, grupos } = compararItems();
   const coinc = items.filter(i => i.yo === i.par).length;
   const lista = (arr, vacioTxt) => arr.length
     ? `<ul>${arr.map(i => `<li><i style="background:${i.f.color}"></i><span>${esc(i.nombre)} <span class="muted" style="font-variant-numeric:tabular-nums">(${i.yo} / ${i.par})</span></span></li>`).join('')}</ul>`
@@ -533,10 +554,29 @@ function bandaEjemplo(){
   return `<div class="ejemplo-banda"><span>Estás viendo datos de ejemplo, inspirados en el mapa de una Jefatura de Proyecto.</span><button id="b-salir-ej">Hacer mi autoevaluación</button></div>`;
 }
 function pie(){
-  return `<div class="acciones" id="pie">
-    <button class="btn borde" id="b-copiar">Copiar resumen</button>
-    ${S.par ? '<button class="btn texto" id="b-rehacer-par">Reemplazar evaluación de par</button>' : ''}
-    <button class="btn texto" id="b-reiniciar">Comenzar de nuevo</button>
+  return `<div class="stack">
+    <div class="acciones" id="pie">
+      <button class="btn" id="b-pdf">Descargar reporte (PDF)</button>
+      <button class="btn borde" id="b-ia" aria-expanded="false" aria-controls="panel-ia">Conversar con una IA</button>
+      ${S.par ? '<button class="btn texto" id="b-rehacer-par">Reemplazar evaluación de par</button>' : ''}
+      <button class="btn texto" id="b-reiniciar">Comenzar de nuevo</button>
+    </div>
+    <div class="card stack panel-ia" id="panel-ia" hidden>
+      <div class="stack" style="gap:6px">
+        <h3>Texto para conversar con una IA</h3>
+        <p class="muted" style="font-size:14px;max-width:64ch">Incluye tus resultados${S.par ? ', los del par' : ''} y una petición de análisis. Cópialo y pégalo en ChatGPT, Claude, Gemini o Copilot para profundizar en tu plan de desarrollo.</p>
+      </div>
+      <div class="campo"><label for="txt-ia">Texto generado</label><textarea id="txt-ia" rows="12" readonly></textarea></div>
+      <div class="acciones">
+        <button class="btn amarillo" id="b-copiar-ia">Copiar texto</button>
+        <button class="btn borde" id="b-txt-ia">Descargar .txt</button>
+        <span class="muted" style="font-size:13px">Abrir:
+          <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> ·
+          <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a> ·
+          <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a> ·
+          <a href="https://copilot.microsoft.com/" target="_blank" rel="noopener">Copilot</a></span>
+      </div>
+    </div>
   </div>`;
 }
 
@@ -604,7 +644,14 @@ function conectar(){
     ir('cuestionario', {modo:'par', paso:0});
   });
   $('b-salir-ej')?.addEventListener('click', () => { S = vacio(); ir('inicio'); });
-  $('b-copiar')?.addEventListener('click', copiarResumen);
+  $('b-pdf')?.addEventListener('click', descargarPDF);
+  $('b-ia')?.addEventListener('click', e => {
+    const panel = $('panel-ia'), abrir = panel.hidden;
+    panel.hidden = !abrir; e.currentTarget.setAttribute('aria-expanded', abrir);
+    if (abrir){ $('txt-ia').value = textoIA(); panel.scrollIntoView({behavior:'smooth', block:'nearest'}); }
+  });
+  $('b-copiar-ia')?.addEventListener('click', () => copiar($('txt-ia')));
+  $('b-txt-ia')?.addEventListener('click', () => descargarArchivo(`${nombreArchivo()}-para-IA.txt`, $('txt-ia').value, 'text/plain'));
   $('b-rehacer-par')?.addEventListener('click', () => confirmarEn('b-rehacer-par', 'Se borrará la evaluación de par actual.', () => { S.par = null; ir('par-inicio'); }));
   $('b-reiniciar')?.addEventListener('click', () => confirmarEn('b-reiniciar', 'Se borrarán todas las respuestas.', () => { S = vacio(); ir('inicio'); }));
 }
@@ -616,23 +663,99 @@ function confirmarEn(id, msg, accion){
   $('b-no').addEventListener('click', render);
 }
 
-function copiarResumen(){
-  const a = S.auto.resp;
-  let t = `Mapa de fortalezas — ${S.perfil.nombre} (${S.perfil.rol})\n`;
+function compararItems(){
+  const a = S.auto.resp, p = S.par.resp;
+  const items = FOCOS.flatMap(f => f.items.map(it => ({ ...it, f, yo:a[it.id], par:p[it.id] })));
+  return { items, grupos: {
+    compartidas: items.filter(i => i.yo >= 4 && i.par >= 4),
+    ocultas: items.filter(i => i.par - i.yo >= 1),
+    ciegos: items.filter(i => i.yo - i.par >= 1),
+    desarrollo: items.filter(i => i.yo <= 2 && i.par <= 2)
+  }};
+}
+
+const avisar = m => { const el = $('toast'); el.textContent = m; el.hidden = false; clearTimeout(avisar.t); avisar.t = setTimeout(() => el.hidden = true, 2200); };
+
+function copiar(textarea){
+  const ok = () => avisar('Texto copiado. Pégalo en la IA que prefieras.');
+  const manual = () => { textarea.focus(); textarea.select(); avisar('Selecciona el texto y cópialo con Ctrl+C'); };
+  try { navigator.clipboard.writeText(textarea.value).then(ok, () => { textarea.select(); document.execCommand('copy') ? ok() : manual(); }); }
+  catch(e){ manual(); }
+}
+
+function nombreArchivo(){
+  const base = `mapa-fortalezas-${S.perfil.nombre}`.normalize('NFD').replace(/[̀-ͯ]/g,'');
+  return base.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+function descargarArchivo(nombre, contenido, tipo){
+  const url = URL.createObjectURL(new Blob([contenido], {type:`${tipo};charset=utf-8`}));
+  const a = Object.assign(document.createElement('a'), {href:url, download:nombre});
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  avisar(`Descargando ${nombre}`);
+}
+
+/* Reporte imprimible: autoevaluación + comparación en un solo documento.
+   El navegador lo guarda como PDF desde su diálogo de impresión. */
+function prepararImpresion(){
+  const vistaActual = S.vista;
+  S.vista = 'reporte'; let html = vReporte();
+  if (S.par){ S.vista = 'comparacion'; html += `<div class="salto"></div>${vComparacion()}`; }
+  S.vista = vistaActual;
+  const fecha = new Date().toLocaleDateString('es-CL', {day:'numeric', month:'long', year:'numeric'});
+  $('impresion').innerHTML = `<div class="imp-cabecera"><span class="logo-pill">${$('logo').innerHTML}</span><span class="muted">Generado el ${fecha}</span></div>${html}`;
+}
+function descargarPDF(){
+  prepararImpresion();
+  const titulo = document.title;
+  document.title = nombreArchivo();   // nombre sugerido del PDF
+  window.print();
+  setTimeout(() => document.title = titulo, 1000);
+}
+window.addEventListener('beforeprint', () => { if (S.vista === 'reporte' || S.vista === 'comparacion') prepararImpresion(); });
+
+function textoIA(){
+  const a = S.auto.resp, par = S.par;
+  const lin = [];
+  const nv = v => `${v} (${NIVELES[v].n})`;
+  lin.push(`Actúa como coach de desarrollo profesional. Te comparto los resultados de mi "Mapa de fortalezas y focos de desarrollo", un cuestionario de autoevaluación${par ? ' complementado con la evaluación de otra persona' : ''}. Quiero conversar contigo sobre ellos para entenderlos mejor y definir cómo desarrollarme.`);
+  lin.push('', '## Contexto');
+  lin.push(`- Nombre: ${S.perfil.nombre}`, `- Rol: ${S.perfil.rol}`);
+  lin.push(`- Instrumento: 16 conductas agrupadas en 4 focos del rol (${FOCOS.map(f => f.nombre).join(', ')}).`);
+  lin.push('- Escala de 1 a 5:');
+  [1,2,3,4,5].forEach(v => lin.push(`  ${v} = ${NIVELES[v].n}: ${NIVELES[v].d}`));
+  if (par) lin.push(`- Evaluación de par: respondida por una persona con relación "${par.relacion}", con los mismos ítems y sin ver mis respuestas.`);
+  lin.push('', '## Resultados por foco');
   FOCOS.forEach((f,i) => {
     const y = prom(a,f);
-    t += `\n${i+1}. ${f.nombre}: autoevaluación ${fmt(y)}${S.par ? ` · par ${fmt(prom(S.par.resp,f))}` : ''} — ${estadoFoco(y).t}\n`;
-    f.items.forEach(it => t += `   - ${it.nombre}: ${NIVELES[a[it.id]].n}${S.par ? ` / par: ${NIVELES[S.par.resp[it.id]].n}` : ''}\n`);
+    lin.push('', `### ${i+1}. ${f.nombre}`);
+    lin.push(`Promedio autoevaluación: ${fmt(y)} de 5 (${estadoFoco(y).t})${par ? ` · Promedio par: ${fmt(prom(par.resp,f))} de 5` : ''}`);
+    f.items.forEach(it => {
+      let l = `- ${it.nombre} (${it.desc.replace(/\.$/,'')}): yo ${nv(a[it.id])}`;
+      if (par){ const q = par.resp[it.id], d = q - a[it.id]; l += ` | par ${nv(q)} | ${d === 0 ? 'coinciden' : d > 0 ? `el par me ve ${d} punto(s) más alto` : `me veo ${-d} punto(s) más alto que el par`}`; }
+      lin.push(l);
+    });
+    if (S.auto.interes[f.id]) lin.push(`Mi interés en proyectarme en este foco: ${INTERES[S.auto.interes[f.id]]}`);
+    if ((S.auto.coment[f.id]||'').trim()) lin.push(`Mi foco de desarrollo declarado: "${S.auto.coment[f.id].trim()}"`);
+    if (par && (par.coment[f.id]||'').trim()) lin.push(`Sugerencia del par: "${par.coment[f.id].trim()}"`);
   });
-  const avisar = m => { const el = $('toast'); el.textContent = m; el.hidden = false; setTimeout(() => el.hidden = true, 2200); };
-  try {
-    navigator.clipboard.writeText(t).then(() => avisar('Resumen copiado'), () => fallback(t));
-  } catch(e){ fallback(t); }
-  function fallback(txt){
-    const pie = $('pie');
-    pie.insertAdjacentHTML('afterend', `<div class="campo" style="margin-top:12px"><label for="txt-resumen">Selecciona y copia el resumen</label><textarea id="txt-resumen" rows="10">${esc(txt)}</textarea></div>`);
-    $('txt-resumen').select();
+  if (par){
+    const { grupos } = compararItems();
+    const l = arr => arr.length ? arr.map(i => `${i.nombre} (yo ${i.yo}, par ${i.par})`).join('; ') : 'ninguna';
+    lin.push('', '## Síntesis de la comparación');
+    lin.push(`- Fortalezas compartidas (ambos 4 o más): ${l(grupos.compartidas)}`);
+    lin.push(`- Fortalezas por reconocer (el par me ve más alto): ${l(grupos.ocultas)}`);
+    lin.push(`- Posibles puntos ciegos (me veo más alto que el par): ${l(grupos.ciegos)}`);
+    lin.push(`- Focos de desarrollo compartidos (ambos 2 o menos): ${l(grupos.desarrollo)}`);
   }
+  lin.push('', '## Lo que te pido');
+  lin.push('1. Interpreta mis resultados: qué fortalezas destacan y qué patrones ves entre los focos.');
+  if (par) lin.push('2. Analiza las diferencias entre mi mirada y la del par: qué podrían significar y cómo conversarlas con esa persona.');
+  lin.push(`${par ? 3 : 2}. Propón un plan de desarrollo de 90 días para mis 2 o 3 prioridades, con acciones concretas según el modelo 70-20-10 (experiencia, aprendizaje con otros, formación).`);
+  lin.push(`${par ? 4 : 3}. Considera mi interés de proyección al priorizar.`);
+  lin.push('', 'Ten presente que esto es autopercepción' + (par ? ' más una sola mirada externa' : '') + ', no un diagnóstico definitivo. Antes de concluir, hazme 2 o 3 preguntas para entender mejor mi contexto. Responde en español.');
+  return lin.join('\n');
 }
 
 function cargarEjemplo(){
