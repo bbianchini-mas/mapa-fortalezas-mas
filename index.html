@@ -305,7 +305,7 @@ const FOCOS = [
   { id:'rep', nombre:'Reporte y análisis', color:'var(--f4)', items:[
     ['Consolidación de hallazgos','Integra información de distintas fuentes (encuestas, observación, facilitadores) en hallazgos concretos.'],
     ['Lectura de emergentes','Interpreta lo que surge en la ejecución a la luz de la necesidad del cliente.'],
-    ['Medición de ROI','Calcula el retorno de la inversión (ROI) de un programa siguiendo los pasos de la metodología de Jack Phillips.'],
+    ['Reporte por niveles (ROI)','Reporta los resultados en términos de los niveles definidos por la metodología ROI de Jack Phillips.'],
     ['Presentación de resultados','Adapta la presentación de resultados a la audiencia del cliente.'],
     ['Recomendaciones al cliente','Formula recomendaciones accionables a partir de los hallazgos.']]}
 ];
@@ -754,7 +754,7 @@ function textoIA(){
   lin.push('- Escala de 1 a 5:');
   [1,2,3,4,5].forEach(v => lin.push(`  ${v} = ${NIVELES[v].n}: ${NIVELES[v].d}`));
   if (par) lin.push(`- Evaluación de par: respondida por una persona con relación "${par.relacion}", con los mismos ítems y sin ver mis respuestas. Podía marcar "No lo he observado"; esos ítems quedan fuera de los promedios.`);
-  lin.push('- Dos ítems evalúan dominio de la metodología ROI de Jack Phillips, un diferenciador de MAS Consultores: "Objetivos de impacto (ROI)" y "Medición de ROI".');
+  lin.push('- Dos ítems evalúan dominio de la metodología ROI de Jack Phillips, un diferenciador de MAS Consultores: "Objetivos de impacto (ROI)" y "Reporte por niveles (ROI)".');
   lin.push('', '## Resultados por foco');
   FOCOS.forEach((f,i) => {
     const y = prom(a,f);

@@ -33,10 +33,11 @@ siga midiendo el rol completo:
   un objetivo correspondiente: reacción, aprendizaje, aplicación, impacto y ROI.
   Definir objetivos de impacto ligados a indicadores de negocio desde el diseño
   es lo que después permite medir el ROI.
-- **Reporte y análisis → Medición de ROI.** Calcular el ROI siguiendo los pasos
-  de la metodología: aislar el efecto del programa, convertir los datos de impacto
-  a valor monetario, compararlos con el costo total del programa e informar los
-  beneficios intangibles.
+- **Reporte y análisis → Reporte por niveles (ROI).** Reportar los resultados en
+  términos de los niveles de la metodología: reacción, aprendizaje, aplicación,
+  impacto y, cuando es factible, ROI. El ítem no pide calcular el ROI, porque en la
+  práctica de MAS ese cálculo rara vez es posible; mide el dominio del marco de
+  niveles al reportar.
 
 ## Cambios respecto de la versión 1
 
@@ -55,7 +56,7 @@ siga midiendo el rol completo:
 | Mantiene al cliente informado **y** alineado durante **toda** la ejecución | Dos ideas y un absoluto | "Informa al cliente del avance del proyecto en los momentos acordados" |
 | Presenta los resultados **con claridad y autonomía** | Dos juicios incorporados | "Adapta la presentación de resultados a la audiencia del cliente" |
 | Propone recomendaciones accionables **y** con mirada estratégica | Dos atributos | "Formula recomendaciones accionables a partir de los hallazgos" |
-| — | — | Nuevos: "Objetivos de impacto (ROI)" y "Medición de ROI" |
+| — | — | Nuevos: "Objetivos de impacto (ROI)" y "Reporte por niveles (ROI)" |
 
 Total: 16 → 21 ítems (5 + 6 + 5 + 5). Los promedios se calculan por foco, así
 que la diferencia en el número de ítems no favorece a ningún foco.
