@@ -108,6 +108,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .opciones label{border:1.5px solid var(--line);border-radius:999px;padding:9px 6px;text-align:center;font-size:12.5px;font-weight:600;cursor:pointer;line-height:1.2;display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;color:var(--muted)}
 .opciones label b{font-weight:800;color:var(--fg)}
 .opciones input:checked + label{border-color:transparent}
+.opciones.con-no-obs{grid-template-columns:repeat(5,1fr) minmax(0,1fr)}
+.opciones label[data-v="0"]{border-style:dashed}
+.n0{background:var(--track);color:var(--fg)}
+.instruccion{background:var(--bg);border-radius:14px;padding:12px 16px;font-size:14px;color:var(--muted);max-width:none}
 .opciones input:focus-visible + label{outline:3px solid var(--focus);outline-offset:2px}
 .interes{display:flex;gap:6px;flex-wrap:wrap}
 .interes input{position:absolute;opacity:0;pointer-events:none}
@@ -211,7 +215,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   .campos,.mapa,.sintesis,.cuadrantes,.comentarios{grid-template-columns:1fr}
   .focos-lista{grid-template-columns:1fr 1fr}
   .escala-ref{grid-template-columns:1fr 1fr}
-  .opciones{grid-template-columns:1fr}
+  .opciones,.opciones.con-no-obs{grid-template-columns:1fr}
   .opciones label{justify-content:flex-start;padding-inline:16px}
   .comp-fila{grid-template-columns:minmax(0,1fr) 100px}
   .comp-fila .db{grid-column:1 / -1;grid-row:2}
@@ -274,41 +278,53 @@ button,input,select,textarea{font:inherit;color:inherit}
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
+/* Criterios de redacción de ítems (ver docs/criterios-items.md):
+   una sola conducta observable por ítem, enunciado afirmativo y breve, sin juicios de
+   calidad incorporados (la escala los aporta), sin absolutos ni negaciones, mismo
+   texto para autoevaluación y par, y neutro en género. */
 const FOCOS = [
   { id:'com', nombre:'Comercial y consultivo', color:'var(--f1)', items:[
-    ['Reuniones comerciales y propuestas','Conduce reuniones comerciales y elabora propuestas que responden a lo que el cliente necesita.'],
-    ['Diagnóstico de necesidades','Indaga y precisa la necesidad real del cliente antes de proponer una solución.'],
-    ['Relación consultiva con clientes','Construye relaciones de confianza en las que el cliente la consulta como asesora o asesor.'],
-    ['Detección de oportunidades','Identifica nuevas oportunidades de trabajo dentro de los clientes y proyectos en curso.']]},
+    ['Reuniones comerciales','Conduce reuniones comerciales centradas en los desafíos del cliente.'],
+    ['Diagnóstico de necesidades','Hace preguntas que precisan la necesidad del cliente antes de proponer una solución.'],
+    ['Propuestas','Elabora propuestas que responden a la necesidad levantada con el cliente.'],
+    ['Relación consultiva','Recibe consultas de los clientes sobre temas que van más allá del proyecto en curso.'],
+    ['Detección de oportunidades','Identifica oportunidades de nuevos proyectos en los clientes que atiende.']]},
   { id:'dis', nombre:'Diseño instruccional', color:'var(--f2)', items:[
-    ['Estructura y bajada de contenidos','Organiza los contenidos en una secuencia clara y los traduce a actividades de aprendizaje.'],
-    ['Tiempos de actividades','Estima y distribuye de forma realista el tiempo de cada actividad del programa.'],
-    ['Materiales y dinámica en sala','Diseña materiales y dinámicas que funcionan bien con los participantes en sala.'],
-    ['Inducción de facilitadores','Prepara a los facilitadores para que comprendan el diseño y lo ejecuten con fidelidad.']]},
+    ['Objetivos de impacto (ROI)','Define objetivos de impacto del programa vinculados a indicadores de negocio del cliente, según la metodología ROI de Jack Phillips.'],
+    ['Secuencia de contenidos','Organiza los contenidos del programa en una secuencia que facilita el aprendizaje.'],
+    ['Actividades de aprendizaje','Convierte cada contenido en actividades prácticas para los participantes.'],
+    ['Tiempos de actividades','Estima el tiempo que requiere cada actividad en sala.'],
+    ['Materiales','Elabora materiales de apoyo (presentaciones, guías, casos) listos para usar en sala.'],
+    ['Inducción de facilitadores','Prepara a los facilitadores para ejecutar el diseño según lo planificado.']]},
   { id:'ges', nombre:'Gestión y ejecución', color:'var(--f3)', items:[
-    ['Coordinación con facilitadores','Coordina agendas, roles y acuerdos con los facilitadores a lo largo del proyecto.'],
-    ['Supervisión de primeros talleres','Observa los primeros talleres y ajusta a tiempo lo que no está funcionando.'],
-    ['Gestión de emergentes','Resuelve imprevistos de la ejecución con criterio y sin afectar la calidad.'],
-    ['Contacto directo con cliente','Mantiene al cliente informado y alineado durante toda la ejecución.']]},
+    ['Coordinación con facilitadores','Coordina con los facilitadores lo necesario para cada sesión (fechas, roles, materiales).'],
+    ['Supervisión de primeros talleres','Observa los primeros talleres de un programa para detectar ajustes necesarios.'],
+    ['Ajustes en la ejecución','Implementa a tiempo los ajustes detectados durante la ejecución.'],
+    ['Gestión de emergentes','Resuelve los imprevistos de la ejecución sin afectar la experiencia de los participantes.'],
+    ['Contacto con el cliente','Informa al cliente del avance del proyecto en los momentos acordados.']]},
   { id:'rep', nombre:'Reporte y análisis', color:'var(--f4)', items:[
-    ['Consolidación de hallazgos','Integra la información de talleres y fuentes en hallazgos claros.'],
-    ['Lectura de emergentes','Interpreta lo que surge en la ejecución y lo conecta con la necesidad del cliente.'],
-    ['Presentación de resultados','Presenta los resultados al cliente con claridad y autonomía.'],
-    ['Recomendaciones al cliente','Propone recomendaciones accionables y con mirada estratégica.']]}
+    ['Consolidación de hallazgos','Integra información de distintas fuentes (encuestas, observación, facilitadores) en hallazgos concretos.'],
+    ['Lectura de emergentes','Interpreta lo que surge en la ejecución a la luz de la necesidad del cliente.'],
+    ['Medición de ROI','Calcula el retorno de la inversión (ROI) de un programa siguiendo los pasos de la metodología de Jack Phillips.'],
+    ['Presentación de resultados','Adapta la presentación de resultados a la audiencia del cliente.'],
+    ['Recomendaciones al cliente','Formula recomendaciones accionables a partir de los hallazgos.']]}
 ];
 FOCOS.forEach(f => f.items = f.items.map((it,i) => ({ id:`${f.id}${i+1}`, nombre:it[0], desc:it[1] })));
+const TOTAL_ITEMS = FOCOS.reduce((n,f) => n + f.items.length, 0);
 
+/* Escala de dominio con anclas conductuales (todas las opciones rotuladas).
+   0 = "No lo he observado", solo para el par; no entra en promedios ni comparaciones. */
 const NIVELES = [
-  null,
-  { n:'Desafío', d:'Aún requiere apoyo frecuente.' },
-  { n:'En desarrollo', d:'Lo hace, con apoyo o de forma irregular.' },
-  { n:'Sólido', d:'Lo hace bien y con autonomía.' },
-  { n:'Fortaleza', d:'Destaca; otros pueden apoyarse en esto.' },
-  { n:'Fortaleza diferenciadora', d:'Es un sello propio, poco común en el rol.' }
+  { n:'No lo he observado', d:'No has visto esta conducta en el trabajo.' },
+  { n:'Desafío', d:'Aún no lo logra o necesita apoyo constante.' },
+  { n:'En desarrollo', d:'Lo logra con apoyo o con resultados irregulares.' },
+  { n:'Sólido', d:'Lo logra de forma autónoma y consistente.' },
+  { n:'Fortaleza', d:'Destaca: otras personas del equipo se apoyan en esto.' },
+  { n:'Fortaleza diferenciadora', d:'Nivel poco común en el rol; es un sello propio.' }
 ];
 const INTERES = [null,'Bajo','Medio','Alto'];
 const RELACIONES = ['Jefatura directa','Par / colega','Colaborador/a','Cliente interno','Otra relación'];
-const CLAVE = 'mapa-fortalezas-mas-v1';
+const CLAVE = 'mapa-fortalezas-mas-v2';   // v2: ítems revisados, no compatibles con v1
 
 const vacio = () => ({ perfil:null, auto:{resp:{},interes:{},coment:{}}, par:null, vista:'inicio', paso:0, modo:'auto', ejemplo:false });
 let S = cargar();
@@ -321,8 +337,9 @@ function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(S)); } catc
 function ir(vista, extra={}){ Object.assign(S, {vista}, extra); guardar(); render(); window.scrollTo({top:0}); }
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt = n => n.toFixed(1).replace('.', ',');
-const prom = (resp, f) => f.items.reduce((a,it) => a + (resp[it.id]||0), 0) / f.items.length;
+const fmt = n => Number.isFinite(n) ? n.toFixed(1).replace('.', ',') : '—';
+// Promedio de las respuestas válidas (1–5); "No lo he observado" (0) queda fuera.
+const prom = (resp, f) => { const v = f.items.map(it => resp[it.id]).filter(x => x >= 1); return v.length ? v.reduce((a,b) => a+b, 0) / v.length : NaN; };
 const nivelChip = v => `<span class="nivel n${v}">${NIVELES[v].n}</span>`;
 const estadoFoco = p => p >= 3.5 ? {t:'Fortaleza', c:'b-fort'} : p >= 1.5 ? {t:'En desarrollo', c:'b-dev'} : {t:'Desafío', c:'b-des'};
 const primerNombre = () => esc((S.perfil?.nombre || '').trim().split(/\s+/)[0] || 'la persona evaluada');
@@ -334,7 +351,7 @@ function vInicio(){
       <div>
         <p class="eyebrow">Autodiagnóstico y proyección profesional</p>
         <h1 style="margin-top:10px">Mapa de fortalezas y focos de desarrollo</h1>
-        <p class="lead">Evalúa los 4 focos del rol en 16 conductas. Al terminar verás tu mapa, y podrás pedir a otra persona que te evalúe con los mismos ítems para comparar ambas miradas.</p>
+        <p class="lead">Evalúa los 4 focos del rol en ${TOTAL_ITEMS} conductas. Al terminar verás tu mapa, y podrás pedir a otra persona que te evalúe con los mismos ítems para comparar ambas miradas.</p>
       </div>
       <div class="eslabones" aria-hidden="true">
         <span style="height:62%;background:var(--f1)"></span>
@@ -381,12 +398,15 @@ function vCuestionario(){
         <span class="foco-num" style="background:${f.color}">${S.paso+1}</span>
         <div><h2>${f.nombre}</h2><p class="muted" style="margin-top:4px">${esPar ? `¿Qué tan desarrollada observas cada conducta en ${quien}?` : '¿Qué tan desarrollada está en ti cada conducta?'}</p></div>
       </div>
+      ${S.paso === 0 ? `<p class="instruccion">${esPar
+        ? `Basa cada respuesta en situaciones que hayas visto directamente. Si no has observado una conducta, marca <strong>No lo he observado</strong> en vez de suponer.`
+        : `Responde según lo que haces hoy de forma habitual, no según lo que te gustaría hacer. No hay respuestas correctas: el reporte es útil en la medida en que sea preciso.`}</p>` : ''}
       <div>
         ${f.items.map(it => `<fieldset class="item" style="border-left:0;border-right:0;border-bottom:0;margin:0;padding-inline:0">
           <legend style="padding:0;float:left;width:100%"><h3>${it.nombre}</h3><p class="desc" style="margin-top:3px">${it.desc}</p></legend>
-          <div class="opciones">${[1,2,3,4,5].map(v => {
+          <div class="opciones${esPar ? ' con-no-obs' : ''}">${(esPar ? [1,2,3,4,5,0] : [1,2,3,4,5]).map(v => {
             const id = `r-${it.id}-${v}`, ch = datos.resp[it.id] === v;
-            return `<input type="radio" name="${it.id}" id="${id}" value="${v}" ${ch?'checked':''}><label for="${id}" class="${ch?`n${v}`:''}" data-v="${v}"><b>${v}</b> ${NIVELES[v].n}</label>`;
+            return `<input type="radio" name="${it.id}" id="${id}" value="${v}" ${ch?'checked':''}><label for="${id}" class="${ch?`n${v}`:''}" data-v="${v}">${v ? `<b>${v}</b> ` : ''}${NIVELES[v].n}</label>`;
           }).join('')}</div>
         </fieldset>`).join('')}
       </div>
@@ -459,7 +479,7 @@ function vReporte(){
 
     ${S.par ? `<div class="cierre"><div><h3>Ya tienes una evaluación de par</h3><p class="muted">${esc(S.par.nombre)} (${esc(S.par.relacion.toLowerCase())}) respondió los mismos ítems.</p></div>
       <button class="btn amarillo" id="b-ver-comp">Ver comparación</button></div>`
-    : `<div class="cierre"><div><h3>Suma una segunda mirada</h3><p class="muted">Pide a una jefatura, par o colaborador que te evalúe ahora con los mismos 16 ítems. Luego verás en qué coinciden y en qué difieren sus miradas.</p></div>
+    : `<div class="cierre"><div><h3>Suma una segunda mirada</h3><p class="muted">Pide a una jefatura, par o colaborador que te evalúe ahora con los mismos ${TOTAL_ITEMS} ítems. Luego verás en qué coinciden y en qué difieren sus miradas.</p></div>
       <button class="btn amarillo" id="b-invitar">Pedir evaluación de par</button></div>`}
     ${pie()}
   </section>`;
@@ -470,7 +490,7 @@ function vParInicio(){
     <div class="stack">
       <p class="eyebrow">Evaluación de par</p>
       <h1>Entrega el dispositivo a quien evaluará a ${primerNombre()}</h1>
-      <p class="muted" style="max-width:60ch">Responderás las mismas 16 conductas que ${primerNombre()} usó para autoevaluarse. Sus respuestas no se muestran mientras evalúas. Responde según lo que has observado en el trabajo.</p>
+      <p class="muted" style="max-width:60ch">Responderás las mismas ${TOTAL_ITEMS} conductas que ${primerNombre()} usó para autoevaluarse. Sus respuestas no se muestran mientras evalúas. Responde solo según lo que has observado en el trabajo.</p>
     </div>
     <div class="card stack">
       <div class="campos">
@@ -487,6 +507,7 @@ function vParInicio(){
 }
 
 function clasif(yo, par){
+  if (!(par >= 1)) return {t:'Sin observar', c:'g-igual', k:'no'};
   const d = par - yo;
   if (d >= 1) return {t:`Par ve +${d}`, c:'g-oculta', k:'oculta'};
   if (d <= -1) return {t:`Te ves +${-d}`, c:'g-ciego', k:'ciego'};
@@ -494,6 +515,8 @@ function clasif(yo, par){
 }
 function dumbbell(yo, par, color){
   const x = v => (v-1)/4*100;
+  if (!(par >= 1)) return `<div class="db" role="img" aria-label="Autoevaluación ${fmt(yo)}, par sin observar">
+    ${[1,2,3,4,5].map(v => `<i class="tick" style="left:${x(v)}%"></i>`).join('')}<i class="yo" style="left:${x(yo)}%"></i></div>`;
   const a = Math.min(yo,par), b = Math.max(yo,par);
   return `<div class="db" role="img" aria-label="Autoevaluación ${fmt(yo)}, par ${fmt(par)}">
     ${[1,2,3,4,5].map(v => `<i class="tick" style="left:${x(v)}%"></i>`).join('')}
@@ -506,6 +529,7 @@ function vComparacion(){
   const a = S.auto.resp, p = S.par.resp;
   const { items, grupos } = compararItems();
   const coinc = items.filter(i => i.yo === i.par).length;
+  const observados = items.filter(i => i.par >= 1).length;
   const lista = (arr, vacioTxt) => arr.length
     ? `<ul>${arr.map(i => `<li><i style="background:${i.f.color}"></i><span>${esc(i.nombre)} <span class="muted" style="font-variant-numeric:tabular-nums">(${i.yo} / ${i.par})</span></span></li>`).join('')}</ul>`
     : `<p class="vacio">${vacioTxt}</p>`;
@@ -516,7 +540,7 @@ function vComparacion(){
     <div class="stack">
       <p class="eyebrow">Autoevaluación vs. evaluación de par</p>
       <h1>Dos miradas sobre ${esc(S.perfil.nombre)}</h1>
-      <p class="muted" style="max-width:62ch">${esc(S.par.nombre)} (${esc(S.par.relacion.toLowerCase())}) evaluó los mismos 16 ítems. Coinciden exactamente en ${coinc} de 16. Una brecha de 1 punto o más se marca como diferencia.</p>
+      <p class="muted" style="max-width:62ch">${esc(S.par.nombre)} (${esc(S.par.relacion.toLowerCase())}) evaluó los mismos ${TOTAL_ITEMS} ítems. Coinciden exactamente en ${coinc} de ${observados}${observados < TOTAL_ITEMS ? ` ítems observados (${TOTAL_ITEMS - observados} sin observar)` : ''}. Una brecha de 1 punto o más se marca como diferencia.</p>
       <div class="leyenda">
         <span><i class="dot" style="background:var(--fg)"></i>Autoevaluación</span>
         <span><i class="dot" style="background:var(--accent)"></i>Evaluación de par</span>
@@ -526,8 +550,11 @@ function vComparacion(){
     <div class="card">
       <h2 style="margin-bottom:14px">Promedio por foco</h2>
       ${eje}
-      ${FOCOS.map((f,i) => { const y = prom(a,f), q = prom(p,f), c = clasif(Math.round(y*10)/10, Math.round(q*10)/10);
-        return `<div class="comp-fila"><span class="nombre">${i+1}. ${f.nombre}<small>Tú ${fmt(y)} · Par ${fmt(q)}</small></span>${dumbbell(y,q,f.color)}<span class="brecha ${c.c}">${Math.abs(q-y) < .5 ? 'Coinciden' : (q>y ? `Par ve +${fmt(q-y)}` : `Te ves +${fmt(y-q)}`)}</span></div>`; }).join('')}
+      ${FOCOS.map((f,i) => { const y = prom(a,f), q = prom(p,f);
+        const chip = !Number.isFinite(q) ? '<span class="brecha g-igual">Sin observar</span>'
+          : Math.abs(q-y) < .5 ? '<span class="brecha g-igual">Coinciden</span>'
+          : q > y ? `<span class="brecha g-oculta">Par ve +${fmt(q-y)}</span>` : `<span class="brecha g-ciego">Te ves +${fmt(y-q)}</span>`;
+        return `<div class="comp-fila"><span class="nombre">${i+1}. ${f.nombre}<small>Tú ${fmt(y)} · Par ${fmt(q)}</small></span>${dumbbell(y,q,f.color)}${chip}</div>`; }).join('')}
     </div>
 
     <div class="cuadrantes">
@@ -621,7 +648,7 @@ function conectar(){
     $('b-atras')?.addEventListener('click', () => ir('cuestionario', {paso:S.paso-1}));
     fc.addEventListener('submit', e => {
       e.preventDefault();
-      const faltan = f.items.filter(it => !datos.resp[it.id]);
+      const faltan = f.items.filter(it => datos.resp[it.id] === undefined);
       if (faltan.length){
         const av = $('aviso'); av.hidden = false;
         av.textContent = faltan.length === 1 ? `Falta responder "${faltan[0].nombre}".` : `Faltan ${faltan.length} conductas por responder.`;
@@ -666,11 +693,12 @@ function confirmarEn(id, msg, accion){
 function compararItems(){
   const a = S.auto.resp, p = S.par.resp;
   const items = FOCOS.flatMap(f => f.items.map(it => ({ ...it, f, yo:a[it.id], par:p[it.id] })));
+  const obs = items.filter(i => i.par >= 1);   // los "no observados" no se clasifican
   return { items, grupos: {
-    compartidas: items.filter(i => i.yo >= 4 && i.par >= 4),
-    ocultas: items.filter(i => i.par - i.yo >= 1),
-    ciegos: items.filter(i => i.yo - i.par >= 1),
-    desarrollo: items.filter(i => i.yo <= 2 && i.par <= 2)
+    compartidas: obs.filter(i => i.yo >= 4 && i.par >= 4),
+    ocultas: obs.filter(i => i.par - i.yo >= 1),
+    ciegos: obs.filter(i => i.yo - i.par >= 1),
+    desarrollo: obs.filter(i => i.yo <= 2 && i.par <= 2)
   }};
 }
 
@@ -718,14 +746,15 @@ window.addEventListener('beforeprint', () => { if (S.vista === 'reporte' || S.vi
 function textoIA(){
   const a = S.auto.resp, par = S.par;
   const lin = [];
-  const nv = v => `${v} (${NIVELES[v].n})`;
+  const nv = v => v >= 1 ? `${v} (${NIVELES[v].n})` : 'no lo ha observado';
   lin.push(`Actúa como coach de desarrollo profesional. Te comparto los resultados de mi "Mapa de fortalezas y focos de desarrollo", un cuestionario de autoevaluación${par ? ' complementado con la evaluación de otra persona' : ''}. Quiero conversar contigo sobre ellos para entenderlos mejor y definir cómo desarrollarme.`);
   lin.push('', '## Contexto');
   lin.push(`- Nombre: ${S.perfil.nombre}`, `- Rol: ${S.perfil.rol}`);
-  lin.push(`- Instrumento: 16 conductas agrupadas en 4 focos del rol (${FOCOS.map(f => f.nombre).join(', ')}).`);
+  lin.push(`- Instrumento: ${TOTAL_ITEMS} conductas agrupadas en 4 focos del rol (${FOCOS.map(f => f.nombre).join(', ')}).`);
   lin.push('- Escala de 1 a 5:');
   [1,2,3,4,5].forEach(v => lin.push(`  ${v} = ${NIVELES[v].n}: ${NIVELES[v].d}`));
-  if (par) lin.push(`- Evaluación de par: respondida por una persona con relación "${par.relacion}", con los mismos ítems y sin ver mis respuestas.`);
+  if (par) lin.push(`- Evaluación de par: respondida por una persona con relación "${par.relacion}", con los mismos ítems y sin ver mis respuestas. Podía marcar "No lo he observado"; esos ítems quedan fuera de los promedios.`);
+  lin.push('- Dos ítems evalúan dominio de la metodología ROI de Jack Phillips, un diferenciador de MAS Consultores: "Objetivos de impacto (ROI)" y "Medición de ROI".');
   lin.push('', '## Resultados por foco');
   FOCOS.forEach((f,i) => {
     const y = prom(a,f);
@@ -733,7 +762,7 @@ function textoIA(){
     lin.push(`Promedio autoevaluación: ${fmt(y)} de 5 (${estadoFoco(y).t})${par ? ` · Promedio par: ${fmt(prom(par.resp,f))} de 5` : ''}`);
     f.items.forEach(it => {
       let l = `- ${it.nombre} (${it.desc.replace(/\.$/,'')}): yo ${nv(a[it.id])}`;
-      if (par){ const q = par.resp[it.id], d = q - a[it.id]; l += ` | par ${nv(q)} | ${d === 0 ? 'coinciden' : d > 0 ? `el par me ve ${d} punto(s) más alto` : `me veo ${-d} punto(s) más alto que el par`}`; }
+      if (par){ const q = par.resp[it.id], d = q - a[it.id]; l += ` | par ${nv(q)}${q >= 1 ? ` | ${d === 0 ? 'coinciden' : d > 0 ? `el par me ve ${d} punto(s) más alto` : `me veo ${-d} punto(s) más alto que el par`}` : ''}`; }
       lin.push(l);
     });
     if (S.auto.interes[f.id]) lin.push(`Mi interés en proyectarme en este foco: ${INTERES[S.auto.interes[f.id]]}`);
@@ -759,8 +788,8 @@ function textoIA(){
 }
 
 function cargarEjemplo(){
-  const auto = { com1:4,com2:4,com3:5,com4:4, dis1:3,dis2:1,dis3:1,dis4:2, ges1:4,ges2:4,ges3:4,ges4:5, rep1:4,rep2:4,rep3:3,rep4:4 };
-  const par  = { com1:4,com2:5,com3:5,com4:3, dis1:3,dis2:2,dis3:2,dis4:2, ges1:5,ges2:3,ges3:4,ges4:5, rep1:4,rep2:4,rep3:4,rep4:3 };
+  const auto = { com1:4,com2:4,com3:4,com4:5,com5:4, dis1:2,dis2:3,dis3:3,dis4:1,dis5:1,dis6:2, ges1:4,ges2:4,ges3:3,ges4:4,ges5:5, rep1:4,rep2:4,rep3:2,rep4:3,rep5:4 };
+  const par  = { com1:4,com2:5,com3:4,com4:5,com5:3, dis1:2,dis2:3,dis3:2,dis4:2,dis5:2,dis6:0, ges1:5,ges2:3,ges3:3,ges4:4,ges5:5, rep1:4,rep2:4,rep3:3,rep4:4,rep5:3 };
   S = {
     perfil:{nombre:'Jefa de Proyecto (ejemplo)', rol:'Jefatura de Proyecto'},
     auto:{ resp:auto, interes:{com:3,dis:2,ges:2,rep:2}, coment:{

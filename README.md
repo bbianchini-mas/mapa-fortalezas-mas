@@ -8,3 +8,4 @@ con evaluación de par y comparación de ambas miradas. MAS Consultores.
 - Las respuestas se guardan solo en el navegador de quien responde (`localStorage`);
   no se envían a ningún servidor.
 - Publicada con GitHub Pages.
+- Criterios de redacción de los ítems y sus fuentes: [docs/criterios-items.md](docs/criterios-items.md).
